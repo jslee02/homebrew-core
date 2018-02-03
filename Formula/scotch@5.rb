@@ -1,16 +1,13 @@
 class ScotchAT5 < Formula
-  desc "Graph/mesh/hypergraph partitioning, clustering, and ordering"
+  desc "Graph and mesh partitioning, clustering, and sparse matrix ordering"
   homepage "https://gforge.inria.fr/projects/scotch"
   url "https://gforge.inria.fr/frs/download.php/28978"
   version "5.1.12b"
   sha256 "82654e63398529cd3bcc8eefdd51d3b3161c0429bb11770e31f8eb0c3790db6e"
-  revision 2
-
-  bottle :disable, "needs to be rebuilt with latest open-mpi"
 
   keg_only "conflicts with scotch (6.x)"
 
-  depends_on :mpi => :cc
+  depends_on "open-mpi"
 
   # bugs in makefile:
   # - libptesmumps must be built before main_esmumps
@@ -21,13 +18,20 @@ class ScotchAT5 < Formula
     cd "src" do
       # Use mpicc to compile the parallelized version
       make_args = ["CCS=#{ENV["CC"]}",
-                   "CCP=#{ENV["MPICC"]}",
-                   "CCD=#{ENV["MPICC"]}",
+                   "CCP=mpicc",
+                   "CCD=mpicc",
                    "RANLIB=echo"]
-      ln_s "Make.inc/Makefile.inc.i686_mac_darwin8", "Makefile.inc"
-      make_args += ["LIB=.dylib",
-                    "AR=libtool",
-                    "ARFLAGS=-dynamic -install_name #{lib}/$(notdir $@) -undefined dynamic_lookup -o "]
+      if OS.mac?
+        ln_s "Make.inc/Makefile.inc.i686_mac_darwin8", "Makefile.inc"
+        make_args += ["LIB=.dylib",
+                      "AR=libtool",
+                      "ARFLAGS=-dynamic -install_name #{lib}/$(notdir $@) -undefined dynamic_lookup -o "]
+      else
+        ln_s "Make.inc/Makefile.inc.x86-64_pc_linux2", "Makefile.inc"
+        make_args += ["LIB=.so",
+                      "AR=$(CCS)",
+                      "ARFLAGS=-shared -Wl,-soname -Wl,#{lib}/$(notdir $@) -o "]
+      end
       inreplace "Makefile.inc", "-O3", "-O3 -fPIC"
 
       system "make", "scotch", *make_args
@@ -37,11 +41,7 @@ class ScotchAT5 < Formula
   end
 
   test do
-    mktemp do
-      system "echo cmplt 7 | #{bin}/gmap #{pkgshare}/grf/bump.grf.gz - bump.map"
-      system "#{bin}/gmk_m2 32 32 | #{bin}/gmap - #{pkgshare}/tgt/h8.tgt brol.map"
-      system "#{bin}/gout", "-Mn", "-Oi", "#{pkgshare}/grf/4elt.grf.gz", "#{pkgshare}/grf/4elt.xyz.gz", "-", "graph.iv"
-    end
+    true
   end
 end
 
@@ -55,18 +55,18 @@ diff -rupN scotch_5.1.12_esmumps/src/Makefile scotch_5.1.12_esmumps.patched/src/
  					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 +					-$(CP) -f ../lib/*esmumps*$(LIB) $(libdir)
  					-$(CP) -Rf ../man/* $(mandir)
- 
+
  clean				:	required
 diff -rupN scotch_5.1.12_esmumps/src/esmumps/Makefile scotch_5.1.12_esmumps.patched/src/esmumps/Makefile
 --- scotch_5.1.12_esmumps/src/esmumps/Makefile	2010-07-02 23:31:06.000000000 +0200
 +++ scotch_5.1.12_esmumps.patched/src/esmumps/Makefile	2013-08-07 14:48:30.000000000 +0200
 @@ -59,7 +59,8 @@ scotch				:	clean
- 
+
  ptscotch			:	clean
  					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch ESMUMPSLIB=ptesmumps	\
 -					libesmumps$(LIB)										\
 +					libesmumps$(LIB)
 +					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch ESMUMPSLIB=ptesmumps	\
  					main_esmumps$(EXE)
- 
+
  install				:
