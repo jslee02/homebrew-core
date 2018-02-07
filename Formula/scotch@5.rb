@@ -21,10 +21,10 @@ class ScotchAT5 < Formula
                    "CCP=mpicc",
                    "CCD=mpicc",
                    "RANLIB=echo"]
-      ln_s "Make.inc/Makefile.inc.x86-64_pc_linux2", "Makefile.inc"
-      make_args += ["LIB=.so",
-                    "AR=$(CCS)",
-                    "ARFLAGS=-shared -Wl,-soname -Wl,#{lib}/$(notdir $@) -o "]
+      ln_s "Make.inc/Makefile.inc.i686_mac_darwin8", "Makefile.inc"
+      make_args += ["LIB=.dylib",
+                    "AR=libtool",
+                    "ARFLAGS=-dynamic -install_name #{lib}/$(notdir $@) -undefined dynamic_lookup -o "]
       inreplace "Makefile.inc", "-O3", "-O3 -fPIC"
 
       system "make", "scotch", *make_args
