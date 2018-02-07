@@ -23,14 +23,9 @@ class Mumps < Formula
 
   def install
     make_args = ["RANLIB=echo"]
-    if OS.mac?
-      # Building dylibs with mpif90 causes segfaults on 10.8 and 10.10. Use gfortran.
-      shlibs_args = ["LIBEXT=.dylib",
-                     "AR=gfortran -dynamiclib -Wl,-install_name -Wl,#{lib}/$(notdir $@) -undefined dynamic_lookup -o "]
-    else
-      shlibs_args = ["LIBEXT=.so",
-                     "AR=$(FL) -shared -Wl,-soname -Wl,$(notdir $@) -o "]
-    end
+    # Building dylibs with mpif90 causes segfaults on 10.8 and 10.10. Use gfortran.
+    shlibs_args = ["LIBEXT=.dylib",
+                   "AR=gfortran -dynamiclib -Wl,-install_name -Wl,#{lib}/$(notdir $@) -undefined dynamic_lookup -o "]
     make_args += ["OPTF=-O", "CDEFS=-DAdd_"]
     orderingsf = "-Dpord"
 
@@ -103,7 +98,7 @@ class Mumps < Formula
     system "make", "alllib", *(shlibs_args + make_args)
 
     lib.install Dir["lib/*"]
-    lib.install ("libseq/libmpiseq" + (OS.mac? ? ".dylib" : ".so")) if build.without? "mpi"
+    lib.install "libseq/libmpiseq.dylib" if build.without? "mpi"
 
     # Build static libraries (e.g., for Dolfin)
     system "make", "alllib", *make_args
