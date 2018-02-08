@@ -4,10 +4,8 @@ class Scotch < Formula
   url "https://gforge.inria.fr/frs/download.php/file/34618/scotch_6.0.4.tar.gz"
   sha256 "f53f4d71a8345ba15e2dd4e102a35fd83915abf50ea73e1bf6efe1bc2b4220c7"
 
-  option "without-test", "skip build-time tests (not recommended)"
-
   depends_on "open-mpi"
-  depends_on "xz" => :optional # Provides lzma compression.
+  depends_on "xz"
 
   def install
     ENV.deparallelize if MacOS.version >= :sierra
@@ -44,7 +42,6 @@ class Scotch < Formula
       system "make", "scotch", "VERBOSE=ON", *make_args
       system "make", "ptscotch", "VERBOSE=ON", *make_args
       system "make", "install", "prefix=#{prefix}", *make_args
-      system "make", "check", "ptcheck", "EXECP=mpirun -np 2", *make_args if build.with? "test"
     end
 
     # Install documentation + sample graphs and grids.
