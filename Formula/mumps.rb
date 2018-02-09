@@ -77,37 +77,16 @@ class Mumps < Formula
     end
   end
 
-  def caveats
-    s = <<~EOS
-      MUMPS was built with shared libraries. If required,
-      static libraries are available in
-        #{opt_libexec}/lib
-    EOS
-    s += <<~EOS
-      You built a sequential MUMPS library.
-      Please add #{libexec}/include to the include path
-      when building software that depends on MUMPS.
-    EOS
-    s
-  end
-
   test do
     cp_r pkgshare/"examples", testpath
     opts = ["-I#{opt_include}", "-L#{opt_lib}", "-lmumps_common", "-lpord"]
     opts << "-L#{Formula["openblas"].opt_lib}" << "-lopenblas"
-    if Tab.for_name("mumps").with?("mpi")
-      f90 = "mpif90"
-      cc = "mpicc"
-      mpirun = "mpirun -np 2"
-      opts << "-lscalapack"
-    else
-      f90 = ENV["FC"]
-      cc = ENV["CC"]
-      mpirun = ""
-    end
+    f90 = ENV["FC"]
+    cc = ENV["CC"]
+    mpirun = ""
 
     cd testpath/"examples" do
-      system f90, "-o", "ssimpletest", "ssimpletest.F", "-lsmumps", *opts
+      system "gfortran", "-o", "ssimpletest", "ssimpletest.F", "-lsmumps", *opts
       system "#{mpirun} ./ssimpletest < input_simpletest_real"
       system f90, "-o", "dsimpletest", "dsimpletest.F", "-ldmumps", *opts
       system "#{mpirun} ./dsimpletest < input_simpletest_real"
@@ -115,7 +94,7 @@ class Mumps < Formula
       system "#{mpirun} ./csimpletest < input_simpletest_cmplx"
       system f90, "-o", "zsimpletest", "zsimpletest.F", "-lzmumps", *opts
       system "#{mpirun} ./zsimpletest < input_simpletest_cmplx"
-      system cc, "-c", "c_example.c", "-I#{opt_include}"
+      system ENV.cc, "-c", "c_example.c", "-I#{opt_include}"
       system f90, "-o", "c_example", "c_example.o", "-ldmumps", *opts
       system *(mpirun.split + ["./c_example"] + opts)
     end
