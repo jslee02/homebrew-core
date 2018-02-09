@@ -31,6 +31,8 @@ class Mumps < Formula
 
     make_args << "ORDERINGSF=#{orderingsf}"
 
+    make_args += ["CC=#{ENV["CC"]}", "FC=gfortran", "FL=gfortran"]
+
     make_args << "LIBBLAS=-L#{Formula["openblas"].opt_lib} -lopenblas"
 
     ENV.deparallelize # Build fails in parallel on Mavericks.
