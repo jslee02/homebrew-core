@@ -11,14 +11,13 @@ class Ipopt < Formula
   depends_on "openblas"
 
   def install
-    mumps_libs = %w[-ldmumps -lmumps_common -lpord -lmpiseq]
-    mumps_incdir = Formula["mumps"].opt_libexec/"include"
-    mumps_libcmd = "-L#{Formula["mumps"].opt_lib} " + mumps_libs.join(" ")
+    mumps_libcmd = "-L#{Formula["mumps"].opt_lib} " \
+                   + "-ldmumps -lmumps_common -lpord -lmpiseq"
 
     args = ["--disable-debug",
             "--disable-dependency-tracking",
             "--prefix=#{prefix}",
-            "--with-mumps-incdir=#{mumps_incdir}",
+            "--with-mumps-incdir=#{Formula["mumps"].opt_libexec/"include"}",
             "--with-mumps-lib=#{mumps_libcmd}",
             "--enable-shared",
             "--enable-static",
