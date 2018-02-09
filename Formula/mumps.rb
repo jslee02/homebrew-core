@@ -68,20 +68,19 @@ class Mumps < Formula
     cp_r pkgshare/"examples", testpath
     opts = ["-I#{opt_include}", "-L#{opt_lib}", "-lmumps_common", "-lpord"]
     opts << "-L#{Formula["openblas"].opt_lib}" << "-lopenblas"
-    f90 = ENV["FC"]
     cc = ENV["CC"]
 
     cd testpath/"examples" do
       system "gfortran", "-o", "ssimpletest", "ssimpletest.F", "-lsmumps", *opts
       system "./ssimpletest < input_simpletest_real"
-      system f90, "-o", "dsimpletest", "dsimpletest.F", "-ldmumps", *opts
+      system "gfortran", "-o", "dsimpletest", "dsimpletest.F", "-ldmumps", *opts
       system "./dsimpletest < input_simpletest_real"
-      system f90, "-o", "csimpletest", "csimpletest.F", "-lcmumps", *opts
+      system "gfortran", "-o", "csimpletest", "csimpletest.F", "-lcmumps", *opts
       system "./csimpletest < input_simpletest_cmplx"
-      system f90, "-o", "zsimpletest", "zsimpletest.F", "-lzmumps", *opts
+      system "gfortran", "-o", "zsimpletest", "zsimpletest.F", "-lzmumps", *opts
       system "./zsimpletest < input_simpletest_cmplx"
       system ENV.cc, "-c", "c_example.c", "-I#{opt_include}"
-      system f90, "-o", "c_example", "c_example.o", "-ldmumps", *opts
+      system "gfortran", "-o", "c_example", "c_example.o", "-ldmumps", *opts
       system "./c_example", *opts
     end
   end
