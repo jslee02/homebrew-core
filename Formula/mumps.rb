@@ -71,20 +71,19 @@ class Mumps < Formula
     opts << "-L#{Formula["openblas"].opt_lib}" << "-lopenblas"
     f90 = ENV["FC"]
     cc = ENV["CC"]
-    mpirun = ""
 
     cd testpath/"examples" do
       system "gfortran", "-o", "ssimpletest", "ssimpletest.F", "-lsmumps", *opts
-      system "#{mpirun} ./ssimpletest < input_simpletest_real"
+      system "./ssimpletest < input_simpletest_real"
       system f90, "-o", "dsimpletest", "dsimpletest.F", "-ldmumps", *opts
-      system "#{mpirun} ./dsimpletest < input_simpletest_real"
+      system "./dsimpletest < input_simpletest_real"
       system f90, "-o", "csimpletest", "csimpletest.F", "-lcmumps", *opts
-      system "#{mpirun} ./csimpletest < input_simpletest_cmplx"
+      system "./csimpletest < input_simpletest_cmplx"
       system f90, "-o", "zsimpletest", "zsimpletest.F", "-lzmumps", *opts
-      system "#{mpirun} ./zsimpletest < input_simpletest_cmplx"
+      system "./zsimpletest < input_simpletest_cmplx"
       system ENV.cc, "-c", "c_example.c", "-I#{opt_include}"
       system f90, "-o", "c_example", "c_example.o", "-ldmumps", *opts
-      system *(mpirun.split + ["./c_example"] + opts)
+      system "./c_example", *opts
     end
   end
 end
