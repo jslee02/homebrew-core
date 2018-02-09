@@ -3,15 +3,12 @@ class Ipopt < Formula
   homepage "https://projects.coin-or.org/Ipopt"
   url "https://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.9.tgz"
   sha256 "8ff3fe1a8560896fc5559839a87c2530cac4ed231b0806e487bfd3cf2d294ab8"
-  head "https://projects.coin-or.org/svn/Ipopt/trunk", :using => :svn
 
-  option "without-test", "Skip build-time tests (not recommended)"
-
+  depends_on "pkg-config" => :build
   depends_on "ampl-mp"
   depends_on "gcc"
-  depends_on "mumps" # Make sure MUMPS is the sequential version.
+  depends_on "mumps"
   depends_on "openblas"
-  depends_on "pkg-config" => :build
 
   def install
     mumps_libs = %w[-ldmumps -lmumps_common -lpord -lmpiseq]
@@ -35,7 +32,6 @@ class Ipopt < Formula
     system "./configure", *args
     system "make"
     ENV.deparallelize # Needs a serialized install
-    system "make", "test" if build.with? "test"
     system "make", "install"
   end
 
