@@ -35,7 +35,6 @@ class Ipopt < Formula
   end
 
   test do
-    # IPOPT still fails to converge on the Waechter-Biegler problem?!?!
     system "#{bin}/ipopt", "#{Formula["ampl-mp"].opt_pkgshare}/example/wb"
   end
 end
