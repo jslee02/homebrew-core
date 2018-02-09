@@ -25,24 +25,12 @@ class Mumps < Formula
     makefile = "Makefile.G95.SEQ"
     cp "Make.inc/" + makefile, "Makefile.inc"
 
-    make_args += ["SCOTCHDIR=#{Formula["scotch"].opt_prefix}",
-                  "ISCOTCH=-I#{Formula["scotch"].opt_include}"]
-
-    scotch_libs = "LSCOTCH=-L$(SCOTCHDIR) -lscotch -lscotcherr -lscotcherrexit"
-    scotch_libs += "-lscotchmetis"
-    make_args << scotch_libs
-    orderingsf << " -Dptscotch"
-
     make_args += ["LMETISDIR=#{Formula["metis"].opt_lib}",
                   "IMETIS=#{Formula["metis"].opt_include}",
                   "LMETIS=-L#{Formula["metis"].opt_lib} -lmetis"]
     orderingsf << " -Dmetis"
 
     make_args << "ORDERINGSF=#{orderingsf}"
-
-    make_args += ["CC=#{ENV["CC"]} -fPIC",
-                  "FC=gfortran -fPIC",
-                  "FL=gfortran -fPIC"]
 
     make_args << "LIBBLAS=-L#{Formula["openblas"].opt_lib} -lopenblas"
 
