@@ -1,4 +1,4 @@
-class Pagmo < Formula
+class Pygmo < Formula
   desc "Scientific Python library for massively parallel optimization"
   homepage "https://esa.github.io/pagmo2/"
   url "https://github.com/esa/pagmo2/archive/v2.10.tar.gz"
