@@ -17,6 +17,6 @@ class Pygmo < Formula
   end
 
   test do
-    system python, "-c", "import pygmo; pygmo.test.run_test_suite(1)"
+    system "python", "-c", "import pygmo; pygmo.test.run_test_suite(1)"
   end
 end
