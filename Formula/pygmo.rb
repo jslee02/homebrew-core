@@ -5,8 +5,8 @@ class Pygmo < Formula
   sha256 "2fa95e2b464ddeadb9fc09bd314081293f02a1b6abc11c0b05064729a077227c"
 
   depends_on "cmake" => :build
-  depends_on "boost-python" => :build
   depends_on "pagmo" => :build
+  depends_on "boost-python"
   depends_on "numpy"
 
   def install
